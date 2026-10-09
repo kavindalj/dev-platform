@@ -1,0 +1,19 @@
+# alias 
+alias cl="clear"
+alias vim="nvim"
+alias vi="nvim"
+alias bat="batcat"
+alias ls="eza --long --header --group --icons -l"
+
+# zsh plugins
+source ~/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.config/zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# starship
+export STARSHIP_CONFIG=~/.config/starship/starship.toml
+eval "$(starship init zsh)"
+
+. "$HOME/.local/bin/env"
+
+# opencode
+export PATH=/home/dev/.opencode/bin:$PATH
