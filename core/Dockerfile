@@ -22,7 +22,6 @@ ENV TERM=xterm-256color
 RUN apt-get update && apt-get install -y \
     sudo \
     git \
-    neovim \
     tmux \
     zsh \
     curl \
@@ -63,6 +62,28 @@ RUN apt-get update && apt-get install -y \
     locales \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+
+# -----------------------------------------------------------------------------
+# Install latest stable Neovim
+# -----------------------------------------------------------------------------
+
+ARG NVIM_VERSION=0.12.5
+
+RUN ARCH="$(dpkg --print-architecture)" && \
+    case "$ARCH" in \
+        amd64) NVIM_ARCH="x86_64" ;; \
+        arm64) NVIM_ARCH="arm64" ;; \
+        *) echo "Unsupported architecture: $ARCH" >&2; exit 1 ;; \
+    esac && \
+    curl -fL \
+        "https://github.com/neovim/neovim-releases/releases/download/v${NVIM_VERSION}/nvim-linux-${NVIM_ARCH}.tar.gz" \
+        -o /tmp/nvim.tar.gz && \
+    tar -xzf /tmp/nvim.tar.gz -C /opt && \
+    rm /tmp/nvim.tar.gz
+
+ENV PATH="/opt/nvim-linux-x86_64/bin:/opt/nvim-linux-arm64/bin:${PATH}"
+
 
 # -----------------------------------------------------------------------------
 # Configure locale
@@ -106,8 +127,8 @@ RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.config/zsh/zsh
 # copy configs
 # -----------------------------------------------------------------------------
 
-COPY config /home/${USERNAME}/.config
-COPY config/zsh/zshrc /home/${USERNAME}/.zshrc
+COPY --chown=${USERNAME}:${USERNAME} config /home/${USERNAME}/.config
+COPY --chown=${USERNAME}:${USERNAME} config/zsh/zshrc /home/${USERNAME}/.zshrc
 
 # -----------------------------------------------------------------------------
 # Install posting
